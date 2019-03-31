@@ -1,17 +1,14 @@
+import os
 from flask import Flask, request
 from flask_restful import reqparse, Resource, Api
 from sqlalchemy import create_engine
 from flask_jsonpify import jsonify
 import json
 
-import os
-
-os.environ['AZURE_SUBSCRIPTION_ID'] = 'f8e6bc83-6957-4025-8b48-8211b18ba585'
-os.environ['AZURE_CLIENT_ID'] = '3273b819-1292-422f-8fdd-afd9932e5f34'
-os.environ['AZURE_CLIENT_SECRET'] = 'hvBP0FdYiphUtf4S6FUl4nOavdB6L3YPqhTjaf5FS20='
-os.environ['AZURE_TENANT_ID'] = '72f988bf-86f1-41af-91ab-2d7cd011db47'
+from conversions_helper import convert_datetime, encode_datetime
 
 import vm
+import billing
 
 app = Flask(__name__)
 api = Api(app)
@@ -118,25 +115,45 @@ class DeleteById(Resource):
             }
         }
 
-class Flavors(Resource):
+class AllBills(Resource):
     def get(self):
-        return vm.get_all_flavors(False)
+        req = request.get_json(force=True)
+        fromInt = int(req['from'])
+        toInt = int(req['to'])
+
+        fromDateTime = convert_datetime(fromInt)
+        toDateTime = convert_datetime(toInt)
+        print("From: " + str(fromDateTime))
+        print("To: " + str(toDateTime))
+        return billing.get_all_consumptions(fromDateTime, toDateTime)
+
+class Bills(Resource):
+    def get(self, server_id):
+        req = request.get_json(force=True)
+        fromInt = int(req['from'])
+        toInt = int(req['to'])
+
+        fromDateTime = convert_datetime(fromInt)
+        toDateTime = convert_datetime(toInt)
+        print("From: " + str(fromDateTime))
+        print("To: " + str(toDateTime))
+        return billing.get_consumption(server_id, fromDateTime, toDateTime)
 
 class FlavorsWithDetails(Resource):
     def get(self):
-        return vm.get_all_flavors(True)
+        return billing.get_all_flavors(True)
 
 class Prices(Resource):
     def get(self):
-        return vm.get_all_prices()
+        return billing.get_all_prices()
 
 api.add_resource(Servers, '/servers')
 api.add_resource(ServerAction, '/servers/<server_id>/action')
 api.add_resource(VolumesAction, '/servers/<server_id>/volumes')
 api.add_resource(VolumeById, '/servers/<server_id>/volumes/<volume_id>')
 api.add_resource(ServerById, '/servers/<server_id>')
-api.add_resource(Flavors, '/flavors')
-api.add_resource(FlavorsWithDetails, '/flavors/detail')
+api.add_resource(AllBills, '/bills')
+api.add_resource(Bills, '/bills/<server_id>')
 api.add_resource(Prices, '/prices')
 
 if __name__ == '__main__':

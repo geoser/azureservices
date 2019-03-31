@@ -5,21 +5,15 @@ from enum import Enum
 from datetime import datetime, timedelta
 import adal
 import requests
-import urllib.parse
 import json
-import re
+from auth_helper import AuthInfo
 
-from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.compute.models import DiskCreateOption
-from azure.mgmt.billing import BillingManagementClient
 
 from msrestazure.azure_exceptions import CloudError
-
-from haikunator import Haikunator
-haikunator = Haikunator()
 
 class OsType(Enum):
     WINDOWS = 1
@@ -40,8 +34,6 @@ class ServerDoesNotExistError(BaseException): pass
 class NoAvailableLunsError(BaseException): pass
 class LunNotFoundError(BaseException): pass
 
-GLOBAL_PREFIX = 'tks-'
-
 VM_REFERENCE = {
     'LINUX': {
         'publisher': 'Canonical',
@@ -57,14 +49,7 @@ VM_REFERENCE = {
     }
 }
 
-def get_credentials():
-    subscription_id = os.environ['AZURE_SUBSCRIPTION_ID']
-    credentials = ServicePrincipalCredentials(
-        client_id=os.environ['AZURE_CLIENT_ID'],
-        secret=os.environ['AZURE_CLIENT_SECRET'],
-        tenant=os.environ['AZURE_TENANT_ID']
-    )
-    return credentials, subscription_id
+GLOBAL_PREFIX = 'tks-'
 
 def create_public_ip_address(location, groupName):
     public_ip_addess_params = {
@@ -454,166 +439,6 @@ def set_volume(server_id:str, lun:int, sizeGB:int):
     attach_volume_internal(vmObj, server_id, detach['azure_id'], detach['name'], detach['id'])
     return 'ok'
 
-def get_all_flavors(details):
-    flavors = [
-        {
-            'size': 'Standard_NC6',
-            'vcpus': 6,
-            'ram': 56,
-            'disk': 340,
-            'gpu': 1
-        },
-        {
-            'size': 'Standard_NC6s_v2',
-            'vcpus': 6,
-            'ram': 112,
-            'disk': 736,
-            'gpu': 1
-        }
-    ]
-    if details:
-        return flavors
-    
-    return [f['size'] for f in flavors]
-
-def get_all_prices():
-    return [
-        {
-            'size': 'Standard_NC6',
-            'cost': '$1.387'
-        },
-        {
-            'size': 'Standard_NC6s_v2',
-            'cost': '$3.19'
-        }
-    ]
-
-def get_billing_periods():
-    return [p for p in billing_client.billing_periods.list()]
-
-def get_latest_invoice():
-    return billing_client.invoices.get_latest()
-
-def get_token(tenant_id, client_id, client_secret):
-    context = adal.AuthenticationContext('https://login.microsoftonline.com/' + tenant_id)
-    token = context.acquire_token_with_client_credentials('https://management.azure.com/', client_id, client_secret)
-    return {
-        "bearer": token['accessToken'], 
-        "expiresOn": datetime.strptime(token['expiresOn'], '%Y-%m-%d %H:%M:%S.%f') 
-    }
-
-def rest_internal(url:str, verb:str, payload_json = ''):
-    global __token__
-    if __token__ is None or (__token__ is not None and __token__['expiresOn'] > (datetime.now() - timedelta(minutes=5))):
-        rest_login()
-
-    hed = {'Authorization': 'Bearer ' + __token__['bearer'], 'Content-Type': 'application/json'}
-    if (verb == 'get'):
-        response = requests.get(url, headers=hed, timeout=None)
-    if (verb == 'post'):
-        response = requests.post(url, headers=hed, timeout=None, json=payload_json)
-    if (verb == 'put'):
-        response = requests.put(url, headers=hed, timeout=None, json=payload_json)
-
-    response.encoding = 'UTF8'
-    return response.json()
-
-def rest_get(url:str):
-    return rest_internal(url, 'get')
-
-def encode_datetime(d:datetime):
-    dstr = d.strftime('%Y-%m-%dT%H:%M:%S+00:00')
-    return urllib.parse.quote(dstr)
-
-def get_ratecard_url():
-    global subscription_id
-    return "https://management.azure.com/subscriptions/" \
-        + subscription_id \
-        + "/providers/Microsoft.Commerce/RateCard?api-version=2016-08-31-preview&" \
-        + "$filter=OfferDurableId eq 'MS-AZR-0003P' and " \
-        + "Currency eq 'RUB' and Locale eq 'en-EN' and RegionInfo eq 'RU'"
-
-def get_usage_url(reportedStartTime:datetime, reportedEndTime:datetime):
-    global subscription_id
-
-    d_start = encode_datetime(reportedStartTime)
-    d_end = encode_datetime(reportedEndTime)
-
-    return "https://management.azure.com/subscriptions/" \
-        + subscription_id \
-        + "/providers/Microsoft.Commerce/UsageAggregates?api-version=2015-06-01-preview&reportedStartTime=" \
-        + d_start \
-        + "&reportedEndTime=" \
-        + d_end \
-        + "&aggregationGranularity=HOURLY"
-
-def rest_login():
-    global __token__
-    __token__ = get_token(credentials._tenant, credentials.id, credentials.secret)
-
-def get_usage(reportedStartTime:datetime, reportedEndTime:datetime):
-    #temporaly read from file
-    #f = open('usage1.json', 'r', encoding="utf-8")
-    #content = f.read()
-    #f.close()
-    #return json.loads(content)
-
-    url = get_usage_url(reportedStartTime, reportedEndTime)
-    return rest_get(url)
-
-def get_rates_cached():
-    #read from file
-    f = open('rates_en.json', 'r', encoding="utf-8")
-    content = f.read()
-    f.close()
-    return json.loads(content)
-
-def get_rates():
-    url = get_ratecard_url()
-    return rest_get(url)
-
-def get_all_consumptions(reportedStartTime:datetime, reportedEndTime:datetime):
-    rates = get_rates_cached()
-    ratesDict = dict()
-    for rate in rates['Meters']:
-        ratesDict[rate['MeterId']] = rate
-
-    usage = get_usage(reportedStartTime, reportedEndTime)
-    for u in usage['value']:
-        if 'instanceData' in u['properties']:
-            instanceData = json.loads(u['properties']['instanceData'])
-            u['resourceUri'] = instanceData['Microsoft.Resources']['resourceUri']
-            u['quantity'] = u['properties']['quantity']
-            u['usageStartTime'] = u['properties']['usageStartTime']
-            u['usageEndTime'] = u['properties']['usageEndTime']
-
-            rate = ratesDict[u['properties']['meterId']]
-            u['rate_price'] = rate['MeterRates']['0']
-            u['rate_category'] = rate['MeterCategory']
-
-            u['rate_sum'] = u['rate_price'] * u['quantity']
-
-            matchRes = re.search(r'/resourceGroups/([^/]+)/', u['resourceUri'])
-            if matchRes is not None:
-                u['resource_group'] = matchRes.groups()[0]
-
-    return usage['value']
-
-def get_consumption(server_id:str, reportedStartTime:datetime, reportedEndTime:datetime):
-    all_consumptions = get_all_consumptions(reportedStartTime, reportedEndTime)
-    server_consumption = [c for c in all_consumptions if 'resource_group' in c and c['resource_group'] == server_id]
-
-    if (server_consumption is not None):
-        t = [float(c['rate_sum']) for c in server_consumption if c['rate_sum'] is not None]
-        result = {
-            "sum": sum(t),
-            "meters": server_consumption
-        } 
-        return result
-
-credentials, subscription_id = get_credentials()
-__token__ = None
-resource_client = ResourceManagementClient(credentials, subscription_id)
-compute_client = ComputeManagementClient(credentials, subscription_id)
-network_client = NetworkManagementClient(credentials, subscription_id)
-billing_client = BillingManagementClient(credentials, subscription_id)
+resource_client = ResourceManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)
+compute_client = ComputeManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)
+network_client = NetworkManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)
