@@ -8,3 +8,13 @@ def convert_datetime(time_stamp:int):
 def encode_datetime(d:datetime):
     dstr = d.strftime('%Y-%m-%dT%H:%M:%S+00:00')
     return urllib.parse.quote(dstr)
+
+def create_response(server_id:str, service_type:str, service_name:str, name:str = ''):
+    return {
+        "server": {
+            "server_id": server_id, 
+            "service_type": service_type,
+            "service_name": service_name,
+            "name": name
+        }
+    }

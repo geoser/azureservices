@@ -5,17 +5,21 @@ from sqlalchemy import create_engine
 from flask_jsonpify import jsonify
 import json
 
-from conversions_helper import convert_datetime, encode_datetime
+print("current folder: " + os.getcwd())
+
+from conversions_helper import convert_datetime, encode_datetime, create_response
 
 import vm
 import billing
+import resources
 
 app = Flask(__name__)
 api = Api(app)
 
+
 class Servers(Resource):
     def get(self):
-        return vm.get_all_vms()
+        return resources.get_all_tks_resource_groups()
 
     def post(self):
         req = request.get_json(force=True)
@@ -51,18 +55,23 @@ class Servers(Resource):
 
             result = vm.create_vm(vmInfo)
 
-            return {
-                "server": {
-                    "server_id": result['server']['server_id'], 
-                    "service_type": result['server']['service_type'],
-                    "service_name": result['server']['service_name'],
-                    "name": vmInfo.name
-                }
-            }
+            return create_response(
+                result['server']['server_id'], 
+                result['server']['service_type'],
+                result['server']['service_name'],
+                vmInfo.name
+            )
 
 class ServerById(Resource):
     def get(self, server_id):
         return vm.get_vm(server_id)
+    
+    def put(self, server_id):
+        req = request.get_json(force=True)
+        if 'size' in req:
+            size = req['size']
+            vm.set_vm_size(server_id, size)
+            return create_response(server_id, 'vm', size)
 
 class ServerAction(Resource):
     def post(self, server_id):
@@ -138,10 +147,6 @@ class Bills(Resource):
         print("From: " + str(fromDateTime))
         print("To: " + str(toDateTime))
         return billing.get_consumption(server_id, fromDateTime, toDateTime)
-
-class FlavorsWithDetails(Resource):
-    def get(self):
-        return billing.get_all_flavors(True)
 
 class Prices(Resource):
     def get(self):

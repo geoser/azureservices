@@ -21,7 +21,8 @@ def create_deployment(server_id:str, template, params):
 
     resource_client.deployments.create_or_update(server_id, "deployment_" + server_id, properties)
 
-def get_all_resource_groups():
-    return resource_client.resource_groups.list(filter="tagName eq 'service_type'")
+def get_all_tks_resource_groups():
+    paged = resource_client.resource_groups.list(filter="tagName eq 'service_type'")
+    return [{"server_id": g.name,"service_type": g.tags["service_type"]} for g in paged]
 
 resource_client = ResourceManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)

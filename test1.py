@@ -3,9 +3,8 @@ import sql.sql_deployment as sd
 from sql.sql_parameters import SqlParameters
 
 
-res = resources.get_all_resource_groups()
+res = resources.get_all_tks_resource_groups()
 
-res.next()
 
 #params = SqlParameters()
 #params.administrator_password = "})&B7Tq33n1f"
