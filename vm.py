@@ -211,15 +211,7 @@ def create_vm(vmInfo: VmCreationInfo):
         #delete_async_operation.wait()
         #print("\nDeleted: {}".format(GROUP_NAME))
 
-    result = {
-        'server': {
-            'server_id': server_id,
-            'service_type': ServiceType.VM.name,
-            'service_name': vmInfo.size
-        }
-    }
-
-    return result
+    return server_id
 
 def convert_vm_internal(virtual_machine):
     return {
@@ -430,6 +422,19 @@ def create_volume(server_id:str, sizeGB:int):
         'size': sizeGB,
         'azure_id': data_disk.id
     }
+
+def delete_volume(server_id:str, lun:int):
+    vmObj = get_vm_internal(server_id)
+
+    vol = get_volume_by_lun_internal(vmObj, server_id, lun)
+    disk_name = vol['name']
+
+    print('Detaching disk ' + str(lun))
+    detach = detach_volume_internal(vmObj, server_id, lun)
+
+    print('Deleting disk ' + str(lun))
+    compute_client.disks.delete(server_id, disk_name)
+    return "ok"
 
 def set_volume(server_id:str, lun:int, sizeGB:int):
     vmObj = get_vm_internal(server_id)

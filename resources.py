@@ -25,4 +25,9 @@ def get_all_tks_resource_groups():
     paged = resource_client.resource_groups.list(filter="tagName eq 'service_type'")
     return [{"server_id": g.name,"service_type": g.tags["service_type"]} for g in paged]
 
+def get_resource_service_type(server_id:str):
+    group = [r for r in resource_client.resource_groups.list(filter="name eq '" + server_id + "'")]
+    if len(group) > 0 and 'service_type' in group[0].tags:
+        return group[0].tags['service_type']
+
 resource_client = ResourceManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)

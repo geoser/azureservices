@@ -11,7 +11,7 @@ def get_credentials():
     )
     return credentials, subscription_id
 
-auth_json = json.load(open(".\\auth_passwords.json"))
+auth_json = json.load(open("python\\auth_passwords.json"))
 auth_info = auth_json["msinternal"]
 
 os.environ['AZURE_SUBSCRIPTION_ID'] = auth_info["subscription_id"]

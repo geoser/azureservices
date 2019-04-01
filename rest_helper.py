@@ -3,6 +3,8 @@ import adal
 import requests
 import auth_helper
 
+class GatewayError(BaseException): pass
+
 def get_token(tenant_id, client_id, client_secret):
     context = adal.AuthenticationContext('https://login.microsoftonline.com/' + tenant_id)
     token = context.acquire_token_with_client_credentials('https://management.azure.com/', client_id, client_secret)
@@ -32,11 +34,17 @@ def rest_get(url:str = None):
         print("REST GET: " + url)
         result =  rest_internal(url, 'get')
         if "value" in result and result["value"] is not None:
+            print('yield from result["value"]')
             yield from result["value"]
             if "nextLink" in result:
                 url = result["nextLink"]
             else:
                 url = None
+        if "error" in result:
+            print(result['error'])
+            raise GatewayError(result['error'])
+        else:
+            url = None
 
 def rest_login():
     global __token__

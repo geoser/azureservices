@@ -12,20 +12,19 @@ from conversions_helper import convert_datetime, encode_datetime, create_respons
 import vm
 import billing
 import resources
+import request_dispatcher as rd
 
 app = Flask(__name__)
 api = Api(app)
 
-
 class Servers(Resource):
     def get(self):
-        return resources.get_all_tks_resource_groups()
+        return rd.servers_get()
 
     def post(self):
         req = request.get_json(force=True)
         server = req['server']
 
-        service_type = server['service_type']
         '''
         
         POST <server_url>/servers
@@ -43,23 +42,13 @@ class Servers(Resource):
             }
         }
         '''
-        if service_type == vm.ServiceType.VM.name:
-            vmInfo = vm.VmCreationInfo()
-            vmInfo.name = server['name']
-            vmInfo.size = server['service_name']
-            vmInfo.user_name = server['user_name']
-            vmInfo.password = server['password']
-            vmInfo.os_type = vm.OsType[server['os_type']]
-
-            print(vmInfo)
-
-            result = vm.create_vm(vmInfo)
-
-            return create_response(
-                result['server']['server_id'], 
-                result['server']['service_type'],
-                result['server']['service_name'],
-                vmInfo.name
+        
+        server_id = rd.servers_post(server)
+        return create_response(
+                server_id, 
+                server['service_type'],
+                server['service_name'],
+                server['name']
             )
 
 class ServerById(Resource):
@@ -114,6 +103,10 @@ class VolumeById(Resource):
         req = request.get_json(force=True)
         size = int(req['size'])
         return vm.set_volume(server_id, int(volume_id), size)
+
+    def delete(self, server_id, volume_id):
+        print('DELETE: ' + server_id + ' and ' + volume_id)
+        return vm.delete_volume(server_id, int(volume_id))
 
 class DeleteById(Resource):
     def delete(self, server_id):

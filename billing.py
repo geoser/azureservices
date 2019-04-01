@@ -50,12 +50,13 @@ def get_usage_url(reportedStartTime:datetime, reportedEndTime:datetime):
         + "&aggregationGranularity=HOURLY"
 
 def get_usage(reportedStartTime:datetime, reportedEndTime:datetime):
+    print('getting usage data from ' + str(reportedStartTime) + ' to ' + str(reportedEndTime))
     url = get_usage_url(reportedStartTime, reportedEndTime)
     return rest_get(url)
 
 def get_rates_cached():
     #read from file
-    f = open('json/rates_en.json', 'r', encoding="utf-8")
+    f = open('python/json/rates_en.json', 'r', encoding="utf-8")
     content = f.read()
     f.close()
     return json.loads(content)
@@ -109,27 +110,5 @@ def get_consumption(server_id:str, reportedStartTime:datetime, reportedEndTime:d
             "meters": server_consumption
         } 
         return result
-
-def get_all_flavors(details):
-    flavors = [
-        {
-            'size': 'Standard_NC6',
-            'vcpus': 6,
-            'ram': 56,
-            'disk': 340,
-            'gpu': 1
-        },
-        {
-            'size': 'Standard_NC6s_v2',
-            'vcpus': 6,
-            'ram': 112,
-            'disk': 736,
-            'gpu': 1
-        }
-    ]
-    if details:
-        return flavors
-    
-    return [f['size'] for f in flavors]
 
 billing_client = BillingManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)
