@@ -172,7 +172,7 @@ def set_vm_size(server_id:str, size:str):
     params = create_vm_resize_parameters(size)
     vm_name = get_vm_name(server_id)
     compute_client.virtual_machines.update(server_id, vm_name, params)
-    return create_response(server_id, 'vm', size, vm_name)
+    return vm_name
 
 def create_vm(vmInfo: VmCreationInfo):
     server_id = str(uuid.uuid4())

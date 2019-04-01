@@ -70,8 +70,8 @@ class ServerById(Resource):
         req = request.get_json(force=True)
         if 'size' in req:
             size = req['size']
-            vm.set_vm_size(server_id, size)
-            return create_response(server_id, 'vm', size)
+            vm_name = vm.set_vm_size(server_id, size)
+            return create_response(server_id, 'vm', size, vm_name)
 
 class ServerAction(Resource):
     def post(self, server_id):
