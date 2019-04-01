@@ -29,6 +29,7 @@ def rest_internal(url:str, verb:str, payload_json = ''):
 
 def rest_get(url:str = None):
     while url:
+        print("REST GET: " + url)
         result =  rest_internal(url, 'get')
         if "value" in result and result["value"] is not None:
             yield from result["value"]

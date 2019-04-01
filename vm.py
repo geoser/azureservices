@@ -7,8 +7,8 @@ import adal
 import requests
 import json
 from auth_helper import AuthInfo
+import resources
 
-from azure.mgmt.resource import ResourceManagementClient
 from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.compute import ComputeManagementClient
 from azure.mgmt.compute.models import DiskCreateOption
@@ -166,7 +166,7 @@ def create_vm(vmInfo: VmCreationInfo):
     
     # Create Resource group
     print('\nCreate Resource Group')
-    resource_client.resource_groups.create_or_update(server_id, {'location': vmInfo.location})
+    resources.create_resource_group(server_id)
 
     try:
         # Create a NIC
@@ -327,7 +327,8 @@ def restart_vm(server_id:str):
     }
 
 def delete_vm(server_id:str):
-    resource_client.resource_groups.delete(server_id)
+    resources.delete_resource_group(server_id)
+    
     return {
         'server': {
             'server_id': server_id
@@ -439,6 +440,6 @@ def set_volume(server_id:str, lun:int, sizeGB:int):
     attach_volume_internal(vmObj, server_id, detach['azure_id'], detach['name'], detach['id'])
     return 'ok'
 
-resource_client = ResourceManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)
+
 compute_client = ComputeManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)
 network_client = NetworkManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)

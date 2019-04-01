@@ -1,5 +1,4 @@
 import os
-import auth_helper
 from azure.common.credentials import ServicePrincipalCredentials
 
 def get_credentials():
@@ -23,7 +22,7 @@ os.environ['AZURE_TENANT_ID'] = '72f988bf-86f1-41af-91ab-2d7cd011db47'
 #os.environ['AZURE_CLIENT_SECRET'] = '(&tRAgXt*3)rSlC_o'
 #os.environ['AZURE_TENANT_ID'] = '90959085-faf6-4346-80ef-b9acc36f11d1'
 
-_credentials, _subscription_id = auth_helper.get_credentials()
+_credentials, _subscription_id = get_credentials()
 
 class AuthInfo():
     credentials = _credentials
