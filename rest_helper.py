@@ -40,7 +40,7 @@ def rest_get(url:str = None):
                 url = result["nextLink"]
             else:
                 url = None
-        if "error" in result:
+        elif "error" in result:
             print(result['error'])
             raise GatewayError(result['error'])
         else:

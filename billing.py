@@ -56,7 +56,7 @@ def get_usage(reportedStartTime:datetime, reportedEndTime:datetime):
 
 def get_rates_cached():
     #read from file
-    f = open('python/json/rates_en.json', 'r', encoding="utf-8")
+    f = open('json/rates_en.json', 'r', encoding="utf-8")
     content = f.read()
     f.close()
     return json.loads(content)

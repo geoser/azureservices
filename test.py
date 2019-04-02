@@ -8,7 +8,7 @@ import vm
 import billing
 
 #usage = vm.get_usage(datetime(2019, 2, 28, 15), datetime(2019, 3, 27, 18))
-consumptions = billing.get_all_consumptions(datetime(2019, 3, 25, 15), datetime(2019, 3, 27, 15))
+consumptions = billing.get_all_consumptions(datetime(2019, 3, 3, 15), datetime(2019, 3, 27, 15))
 #server_consumption = vm.get_consumption('adec8d18-9110-4e1b-8747-51543ed8474b', datetime(2019, 3, 1, 1), datetime(2019, 3, 27, 22))
 
 #r = [u for u in usage]
