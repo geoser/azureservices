@@ -1,0 +1,580 @@
+{
+	"info": {
+		"_postman_id": "7907fb80-b291-41b1-98d3-274799127249",
+		"name": "TKS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "servers_get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"server\": {\r\n        \"service_type\": \"sql\",\r\n        \"service_name\": \"sql_database\",\r\n        \"administrator_login\": \"userlogin\",\r\n        \"administrator_password\": \"Pa$$w0rd9100\",\r\n        \"collation\": \"SQL_Latin1_General_CP1_CI_AS\",\r\n        \"database_name\": \"testdatabase\"\r\n    }\r\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_put",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"size\": \"Standard_NC6\"\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_actions_post_start",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"os_start\": {\"type\": \"Hard\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/action",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"action"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_actions_post_stop_soft",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"os_stop\": {\"type\": \"Soft\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/action",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"action"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_actions_post_stop_hard",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"os_stop\": {\"type\": \"Hard\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/action",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"action"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_actions_post_reboot",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"reboot\": {\"type\": \"\"}}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/action",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"action"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_volumes_get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"volumes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_volumes_post",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"size\": 50\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"volumes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_volumes_id_get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes/0",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"volumes",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_volumes_id_delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes/1",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"volumes",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "servers_id_volumes_id_put",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"size\": 101\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes/0",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"servers",
+						"adec8d18-9110-4e1b-8747-51543ed8474b",
+						"volumes",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bills_get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"to\": 1553700885787,\n\t\"from\":   1551368356033\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/bills",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"bills"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "bills_id_get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"to\": 1553700885787,\n\t\"from\":   1551368356033\n}"
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5002/bills/adec8d18-9110-4e1b-8747-51543ed8474b",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5002",
+					"path": [
+						"bills",
+						"adec8d18-9110-4e1b-8747-51543ed8474b"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

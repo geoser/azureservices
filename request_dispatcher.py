@@ -50,3 +50,10 @@ def servers_post(request_json):
             "service_type": ServiceType.sql.name,
             "service_name": "sql_database"
         }
+
+def server_id_get(server_id:str):
+    service_type = resources.get_resource_service_type(server_id)
+    if service_type == ServiceType.vm:
+        return vm.get_vm(server_id)
+    elif service_type == ServiceType.sql:
+        return sql.get_sqldb(server_id)

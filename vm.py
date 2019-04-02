@@ -266,7 +266,7 @@ def get_vm(server_id:str):
     return {
         'server': {
             'server_id': server_id,
-            'service_type': ServiceType.VM.name,
+            'service_type': ServiceType.vm.name,
             'service_name': vmObj.hardware_profile.vm_size,
             'name': vmObj.name,
             'status': status,

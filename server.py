@@ -64,7 +64,8 @@ class Servers(Resource):
 
 class ServerById(Resource):
     def get(self, server_id):
-        return vm.get_vm(server_id)
+        return rd.server_id_get(server_id) 
+        #return vm.get_vm(server_id)
     
     def put(self, server_id):
         req = request.get_json(force=True)

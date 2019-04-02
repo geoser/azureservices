@@ -42,8 +42,12 @@ def get_all_tks_resource_groups():
     return [{"server_id": g.name,"service_type": g.tags["service_type"]} for g in paged]
 
 def get_resource_service_type(server_id:str):
-    group = [r for r in resource_client.resource_groups.list(filter="name eq '" + server_id + "'")]
-    if len(group) > 0 and 'service_type' in group[0].tags:
-        return group[0].tags['service_type']
+    print("get service_type for " + server_id)
+    group = resource_client.resource_groups.get(server_id)
+    if group is not None and 'service_type' in group.tags:
+        tagValue = group.tags['service_type']
+        print("value is " + tagValue)
+        return ServiceType[tagValue]
+    print("group is None or no service_type tag")
 
 resource_client = ResourceManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)

@@ -5,4 +5,3 @@ class SqlParameters:
     administrator_password:str
     collation:str = "SQL_Latin1_General_CP1_CI_AS"
     database_name:str = "tks-testdb"
-    server_name:str = "tks-dbserver-" + str(uuid.uuid4())
