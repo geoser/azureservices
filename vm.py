@@ -1,12 +1,12 @@
 import os
 import traceback
-import uuid
-from enum import Enum
 from datetime import datetime, timedelta
+from enum import Enum
 import adal
 import requests
 import json
 from auth_helper import AuthInfo
+from helper import ServiceType
 import resources
 
 from azure.mgmt.network import NetworkManagementClient
@@ -18,9 +18,6 @@ from msrestazure.azure_exceptions import CloudError
 class OsType(Enum):
     WINDOWS = 1
     LINUX = 2
-
-class ServiceType(Enum):
-    VM = 1
 
 class VmCreationInfo:
     location = 'westeurope'
@@ -174,13 +171,7 @@ def set_vm_size(server_id:str, size:str):
     compute_client.virtual_machines.update(server_id, vm_name, params)
     return vm_name
 
-def create_vm(vmInfo: VmCreationInfo):
-    server_id = str(uuid.uuid4())
-    
-    # Create Resource group
-    print('\nCreate Resource Group')
-    resources.create_resource_group(server_id)
-
+def create_vm(server_id:str, vmInfo: VmCreationInfo):
     try:
         # Create a NIC
         nic = create_nic(vmInfo.location, server_id)
@@ -213,22 +204,8 @@ def create_vm(vmInfo: VmCreationInfo):
 
     return server_id
 
-def convert_vm_internal(virtual_machine):
-    return {
-        'server': {
-            'server_id': virtual_machine.tags['server_id'],
-            'service_type': ServiceType.VM.name,
-            'service_name': virtual_machine.hardware_profile.vm_size,
-            'name': virtual_machine.name
-        }
-    }
-
 def get_all_vm_sizes():
     return [size for size in compute_client.virtual_machine_sizes.list('westeurope')]
-
-def get_all_vms():
-    allMachines = compute_client.virtual_machines.list_all()
-    return [convert_vm_internal(vm) for vm in allMachines if 'server_id' in vm.tags]
 
 def get_vm_name(server_id:str):
     vms = compute_client.virtual_machines.list(server_id)

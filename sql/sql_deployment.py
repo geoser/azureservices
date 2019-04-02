@@ -5,7 +5,7 @@ from .sql_parameters import SqlParameters
 import json
 
 def get_parameters(params:SqlParameters):
-    paramJson = json.load(open("python/sql/sql_parameters.json"))
+    paramJson = json.load(open("sql/sql_parameters.json"))
     parametersSection = paramJson["parameters"]
     parametersSection["administratorLogin"]["value"] = params.administrator_login
     parametersSection["administratorLoginPassword"]["value"] = params.administrator_password
@@ -16,7 +16,11 @@ def get_parameters(params:SqlParameters):
     return parametersSection
 
 def get_template():
-    return json.load(open("python/sql/sql_template.json"))
+    return json.load(open("sql/sql_template.json"))
 
-def deploy(server_id:str, sql_template, sql_params):
-    resources.create_resource_group(server_id)
+def deploy(server_id:str, sql_params:SqlParameters):
+    deployment_params = get_parameters(sql_params)
+    deployment_template = get_template()
+    validationResult = resources.validate_deployment(server_id, deployment_template, deployment_params)
+    print(str(validationResult))
+    resources.create_deployment(server_id, deployment_template, deployment_params)

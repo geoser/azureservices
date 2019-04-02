@@ -7,7 +7,7 @@ import json
 
 print("current folder: " + os.getcwd())
 
-from conversions_helper import convert_datetime, encode_datetime, create_response
+from helper import convert_datetime, encode_datetime, create_response
 
 import vm
 import billing
@@ -22,33 +22,44 @@ class Servers(Resource):
         return rd.servers_get()
 
     def post(self):
-        req = request.get_json(force=True)
-        server = req['server']
-
         '''
-        
         POST <server_url>/servers
 
-        sample input:
+        input for vm:
 
         {
             "server": {
-                "name": "test10",
                 "service_type": "VM",
                 "service_name": "Standard_NC6",
+                "name": "test10",
                 "user_name": "userlogin",
-                "password": "Pa$$w0rd91",
+                "password": "Pa$$w0rd9100",
                 "os_type": "WINDOWS"
             }
         }
+
+        input for sql database:
+
+        {
+            "server": {
+                "service_type": "SQL",
+                "service_name": "sql_database",
+                "administrator_login": "userlogin",
+                "administrator_password": "Pa$$w0rd9100",
+                "collation": "SQL_Latin1_General_CP1_CI_AS",
+                "database_name": "testdatabase"
+            }
+        }
         '''
-        
-        server_id = rd.servers_post(server)
+
+        req = request.get_json(force=True)
+        server = req['server']
+
+        result = rd.servers_post(server)
         return create_response(
-                server_id, 
-                server['service_type'],
-                server['service_name'],
-                server['name']
+                result['server_id'], 
+                result['service_type'],
+                result['service_name']
             )
 
 class ServerById(Resource):
@@ -61,6 +72,10 @@ class ServerById(Resource):
             size = req['size']
             vm_name = vm.set_vm_size(server_id, size)
             return create_response(server_id, 'vm', size, vm_name)
+
+    def delete(self, server_id):
+        resources.delete_resource_group(server_id)
+        return create_response(server_id, '', '')
 
 class ServerAction(Resource):
     def post(self, server_id):

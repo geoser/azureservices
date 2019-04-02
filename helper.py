@@ -1,5 +1,10 @@
 from datetime import datetime, timedelta
+from enum import Enum
 import urllib.parse
+
+class ServiceType(Enum):
+    vm      = 1
+    sql     = 2
 
 def convert_datetime(time_stamp:int):
     exact_value = datetime(1970, 1, 1) + timedelta(milliseconds=time_stamp)

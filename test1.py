@@ -2,8 +2,10 @@ import resources
 import sql.sql_deployment as sd
 from sql.sql_parameters import SqlParameters
 
+from helper import ServiceType
+s = 'VM'
 
-res = resources.get_all_tks_resource_groups()
+#res = resources.get_all_tks_resource_groups()
 
 
 #params = SqlParameters()
