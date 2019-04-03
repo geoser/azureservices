@@ -8,7 +8,9 @@ import vm
 import billing
 import sql.sql_deployment as sql
 
-res = sql.get_sqldb("65ff2fd7-81e7-4a99-8251-dafdaa7d89f2")
+sql.set_firewall_rule("65ff2fd7-81e7-4a99-8251-dafdaa7d89f2", 
+    "tks-dbserver-51db26ad-da2b-49b9-a14d-908bf96e3aeb)", "0.0.0.0", "255.255.255.255")
+#res = sql.get_sqldb("65ff2fd7-81e7-4a99-8251-dafdaa7d89f2")
 
 #usage = vm.get_usage(datetime(2019, 2, 28, 15), datetime(2019, 3, 27, 18))
 #consumptions = billing.get_all_consumptions(datetime(2019, 3, 3, 15), datetime(2019, 3, 27, 15))

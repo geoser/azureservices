@@ -48,4 +48,10 @@ def get_sqldb(server_id):
         }
     }
 
+def set_firewall_rule(server_id:str, start_ip, end_ip):
+    server = get_sqlserver(server_id)
+    if server is None: return
+    rule_name = start_ip + "_" + end_ip
+    sql_client.firewall_rules.create_or_update(server_id, server.name, rule_name, start_ip, end_ip)
+
 sql_client = SqlManagementClient(AuthInfo.credentials, AuthInfo.subscription_id)
