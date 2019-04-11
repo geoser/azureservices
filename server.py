@@ -19,6 +19,9 @@ api = Api(app)
 
 class Servers(Resource):
     def get(self):
+        '''
+        GET <server_url>/servers
+        '''
         return rd.servers_get()
 
     def post(self):
@@ -64,10 +67,19 @@ class Servers(Resource):
 
 class ServerById(Resource):
     def get(self, server_id):
+        '''
+        GET <server_url>/servers/65ff2fd7-81e7-4a99-8251-dafdaa7d89f2
+        '''
         return rd.server_id_get(server_id) 
-        #return vm.get_vm(server_id)
     
     def put(self, server_id):
+        '''
+        PUT <server_url>/servers/65ff2fd7-81e7-4a99-8251-dafdaa7d89f2
+
+        {
+            "size": "Standard_NC12"
+        }
+        '''
         req = request.get_json(force=True)
         if 'size' in req:
             size = req['size']
@@ -75,11 +87,31 @@ class ServerById(Resource):
             return create_response(server_id, 'vm', size, vm_name)
 
     def delete(self, server_id):
+        '''
+        DELETE <server_url>/servers/65ff2fd7-81e7-4a99-8251-dafdaa7d89f2
+        '''
         resources.delete_resource_group(server_id)
         return create_response(server_id, '', '')
 
 class ServerAction(Resource):
     def post(self, server_id):
+        '''
+        POST <server_url>/servers/adec8d18-9110-4e1b-8747-51543ed8474b/action
+
+        {"os_start": ""}
+
+        OR
+
+        {"os_stop": {"type": "Soft"}}
+
+        OR
+
+        {"os_stop": {"type": "Hard"}}
+
+        OR
+
+        {"reboot": ""}
+        '''
         req = request.get_json(force=True)
         if 'os_stop' in req:
             type = req['os_stop']['type']
@@ -103,38 +135,62 @@ class ServerAction(Resource):
 
 class VolumesAction(Resource):
     def get(self, server_id):
+        '''
+        GET <server_url>/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes
+        '''
         return vm.get_volumes(server_id)
 
     def post(self, server_id):
+        '''
+        POST <server_url>/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes
+
+        Provide size in GB:
+
+        { "size": 50 }
+        '''
         req = request.get_json(force=True)
         size = int(req['size'])
         return vm.create_volume(server_id, size)
 
 class VolumeById(Resource):
     def get(self, server_id, volume_id):
+        '''
+        GET <server_url>/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes/0
+        '''
         return vm.get_volume_by_lun(server_id, int(volume_id))
     
     def put(self, server_id, volume_id):
+        '''
+        PUT <server_url>/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes/0
+
+        Provide size in GB. Note that size decrease is not allowed. 
+
+        { "size": 101 }
+        '''
         print('PUT: ' + server_id + ' and ' + volume_id)
         req = request.get_json(force=True)
         size = int(req['size'])
         return vm.set_volume(server_id, int(volume_id), size)
 
     def delete(self, server_id, volume_id):
+        '''
+        DELETE <server_url>/servers/adec8d18-9110-4e1b-8747-51543ed8474b/volumes/0
+        '''
         print('DELETE: ' + server_id + ' and ' + volume_id)
         return vm.delete_volume(server_id, int(volume_id))
 
-class DeleteById(Resource):
-    def delete(self, server_id):
-        vm.delete_vm(server_id) 
-        return {
-            'server': {
-                'server_id': server_id
-            }
-        }
-
 class AllBills(Resource):
     def get(self):
+        '''
+        GET <server_url>/bills
+
+        Provide datetime in milliseconds from 01.01.1970 00:00. Tha values will be truncated to the nearest hour. 
+
+        {
+            "to": 1553700885787,
+            "from":   1551368356033
+        }
+        '''
         req = request.get_json(force=True)
         fromInt = int(req['from'])
         toInt = int(req['to'])
@@ -147,6 +203,16 @@ class AllBills(Resource):
 
 class Bills(Resource):
     def get(self, server_id):
+        '''
+        GET <server_url>/bills/adec8d18-9110-4e1b-8747-51543ed8474b
+
+        Provide datetime in milliseconds from 01.01.1970 00:00. Tha values will be truncated to the nearest hour. 
+
+        {
+            "to": 1553700885787,
+            "from":   1551368356033
+        }
+        '''
         req = request.get_json(force=True)
         fromInt = int(req['from'])
         toInt = int(req['to'])
@@ -157,10 +223,6 @@ class Bills(Resource):
         print("To: " + str(toDateTime))
         return billing.get_consumption(server_id, fromDateTime, toDateTime)
 
-class Prices(Resource):
-    def get(self):
-        return billing.get_all_prices()
-
 api.add_resource(Servers, '/servers')
 api.add_resource(ServerAction, '/servers/<server_id>/action')
 api.add_resource(VolumesAction, '/servers/<server_id>/volumes')
@@ -168,7 +230,6 @@ api.add_resource(VolumeById, '/servers/<server_id>/volumes/<volume_id>')
 api.add_resource(ServerById, '/servers/<server_id>')
 api.add_resource(AllBills, '/bills')
 api.add_resource(Bills, '/bills/<server_id>')
-api.add_resource(Prices, '/prices')
 
 if __name__ == '__main__':
      app.run(port='5002')

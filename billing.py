@@ -12,18 +12,6 @@ from azure.mgmt.billing import BillingManagementClient
 
 from msrestazure.azure_exceptions import CloudError
 
-def get_all_prices():
-    return [
-        {
-            'size': 'Standard_NC6',
-            'cost': '$1.387'
-        },
-        {
-            'size': 'Standard_NC6s_v2',
-            'cost': '$3.19'
-        }
-    ]
-
 def get_billing_periods():
     return [p for p in billing_client.billing_periods.list()]
 
